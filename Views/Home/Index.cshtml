@@ -1,0 +1,194 @@
+﻿@model List<Country>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-sm-3 p-3">
+            <canvas id="barChart" width="200" height="400"></canvas>
+        </div>
+        <div class="col-sm-3 p-3">
+            <canvas id="polarChart" width="200" height="400"></canvas>
+        </div>
+        <div class="col-sm-3 p-3">
+            <canvas id="radarChart" width="200" height="400"></canvas>
+        </div>
+        <div class="col-sm-3 p-3">
+            <canvas id="lineChart" width="200" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+
+    <div class=" col-sm-4 col-xs-4">
+        
+    </div>
+
+    <div class=" col-sm-4 col-xs-4">
+        
+    </div>
+
+    <div class=" col-sm-4 col-xs-4">
+       
+    </div>
+
+    <div class=" col-sm-4 col-xs-4">
+        
+    </div>
+
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-interop"></script>
+<script>
+    $.ajax({
+        url: '@Url.Action("GetCountryData", "Home")',
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            const countries = data.map(dt => dt.countryName);
+            const areas = data.map(dt => dt.area);
+            const gdps = data.map(dt => dt.gdp);
+            const lifeExpectancies = data.map(dt => dt.lifeExpectancy);
+            const BirthRate = data.map(country => country.birthRates);
+
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            const barChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: countries,
+                    datasets: [
+                        {
+                            label: 'Area (sq km)',
+                            data: areas,
+                            backgroundColor: 'rgba(189, 114, 153, 0.8)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                },
+            })
+           
+
+            const polarCtx = document.getElementById('polarChart').getContext('2d');
+
+            const polarChart = new Chart(polarCtx, {
+                type: 'polarArea',
+                data: {
+                    labels: countries,
+                    datasets: [
+                        {
+                            label: 'GDP (in million)',
+                            data: gdps,
+                            backgroundColor: [
+                                'rgba(255, 40, 0, 1)',
+                                'rgba(54, 162, 235, 0.5)',
+                                'rgba(255, 206, 86, 0.5)',
+                                'rgba(75, 192, 192, 0.5)',
+                                'rgba(153, 102, 255, 0.5)',
+                                'rgba(0, 215, 255, 1)',
+                                'rgba(201, 93, 20, 0.5)',
+                                'rgba(0, 49, 169, 0.5)',
+                                'rgba(180, 63, 63, 0.5)',
+                                'rgba(102, 153, 0, 0.5)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                            ],
+                            borderWidth: 1,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                        },
+                    },
+                },
+            });
+
+
+            // Radar Chart
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+            const radarChart = new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: countries,
+                    datasets: [
+                        {
+                            label: 'Life Expectancy',
+                            data: lifeExpectancies,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                },
+            });
+            // line chart
+            const lineCtx = document.getElementById('lineChart').getContext('2d');
+            const lineChart = new Chart(lineCtx, {
+                type: 'line',
+                data: {
+                    labels: countries,
+                    datasets: [
+                        {
+                            label: 'Life Expectancy',
+                            data: lifeExpectancies,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1,
+                            fill: false, 
+
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                },
+            });
+
+            
+            
+        },
+        error: function (error) {
+            console.error('Error fetching data:', error);
+        }
+    });
+</script>
